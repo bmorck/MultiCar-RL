@@ -17,6 +17,7 @@ class CarSprite(pygame.sprite.Sprite):
     def __init__(self, image, position):
         pygame.sprite.Sprite.__init__(self)
         self.src_image = pygame.image.load(image)
+        self.image = pygame.image.load(image)
         self.position = position
         self.speed = self.direction = 0
         self.k_left = self.k_right = self.k_down = self.k_up = 0
@@ -27,6 +28,7 @@ class CarSprite(pygame.sprite.Sprite):
     
     def update(self, deltat):
         #SIMULATION
+        #print(str(self.k_up) + " " + str(self.k_down) + " " +  str(self.k_right) + " " +  str(self.k_left))
         self.speed += (self.k_up + self.k_down)
         if self.speed > self.MAX_FORWARD_SPEED:
             self.speed = self.MAX_FORWARD_SPEED
@@ -301,7 +303,35 @@ class MultiCarEnv(gym.Env):
         for sensor in self.sensors:
           self.sensor_group.append(pygame.sprite.RenderPlain(*sensor))
 
-        self.checkpoints = [CheckPointSprite(55, 35, 100, 100, 5)]
+        self.checkpoints = checkpoints = [CheckPointSprite(55, 35, 100, 100, 7), 
+               CheckPointSprite(55, 135, 100, 100, 6),
+               CheckPointSprite(55, 235, 100, 100, 5),
+               CheckPointSprite(55, 335, 100, 100, 4),
+               CheckPointSprite(55, 435, 100, 100, 3),
+               CheckPointSprite(55, 535, 100, 100, 2),
+               CheckPointSprite(55, 635, 100, 100, 1),
+               CheckPointSprite(155, 35, 100, 100, 8),
+               CheckPointSprite(255, 35, 100, 100, 9),
+               CheckPointSprite(355, 35, 100, 100, 10),
+               CheckPointSprite(455, 35, 100, 100, 11),
+               CheckPointSprite(555, 35, 100, 100, 12),
+               CheckPointSprite(655, 35, 100, 100, 13),
+               CheckPointSprite(755, 35, 100, 100, 14),
+               CheckPointSprite(855, 35, 100, 100, 15),
+               CheckPointSprite(855, 135, 100, 100, 16),
+               CheckPointSprite(855, 235, 100, 100, 17),
+               CheckPointSprite(855, 335, 100, 100, 18),
+               CheckPointSprite(855, 435, 100, 100, 19),
+               CheckPointSprite(855, 535, 100, 100, 20),
+               CheckPointSprite(855, 635, 100, 100, 21),
+               CheckPointSprite(755, 635, 100, 100, 22),
+               CheckPointSprite(655, 635, 100, 100, 23),
+               CheckPointSprite(555, 635, 100, 100, 24),
+               CheckPointSprite(455, 635, 100, 100, 25),
+               CheckPointSprite(355, 635, 100, 100, 26),
+               CheckPointSprite(255, 635, 100, 100, 27),
+               CheckPointSprite(155, 635, 100, 100, 28),
+               ]
         self.check_group = pygame.sprite.RenderPlain(*self.checkpoints)
     
         self.time = 0
@@ -333,12 +363,21 @@ class MultiCarEnv(gym.Env):
             cur_action = action_n[i]
             if cur_action == self.LEFT:
                 self.cars[i].k_left = 10
-            elif cur_action == self.RIGHT:
+            else:
+                self.cars[i].k_left = 0
+            if cur_action == self.RIGHT:
                 self.cars[i].k_right = -10
-            elif cur_action == self.DOWN:
+            else:
+                self.cars[i].k_right = 0
+            if cur_action == self.DOWN:
                 self.cars[i].k_down = -2
             else:
+                self.cars[i].k_down = 0
+            if cur_action == self.UP:
                 self.cars[i].k_up = 2
+            else: 
+                self.cars[i].k_up = 0
+
         self.car_group.update(deltat)
         for i in range(0, len(action_n)):
           self.sensor_group[i].update()
@@ -380,6 +419,7 @@ class MultiCarEnv(gym.Env):
             current_obs[8] = max_check     
             current_obs[9] = self.time
 
+            #print(str(j) + " " + str(max_check))
             current_reward += closest_obj * 10
             current_reward += max_check * 10
             current_reward += self.time
@@ -484,7 +524,7 @@ class MultiCarEnv(gym.Env):
         self.pad_group.draw(self.screen)
         self.car_group.draw(self.screen)
         pygame.display.update()
-        pygame.display.flip()
+        #pygame.display.flip()
 
 
 
