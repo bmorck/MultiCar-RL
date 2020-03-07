@@ -65,6 +65,7 @@ class CarSprite(pygame.sprite.Sprite):
 
 
 
+
 class SensorSprite(pygame.sprite.Sprite):
     xpos = 0
     ypos = 0
@@ -237,6 +238,16 @@ pads = [
 ]
 pad_group = pygame.sprite.RenderPlain(*pads)
 
+class CheckPointSprite(pygame.sprite.Sprite):
+    def __init__(self, left, top, width, height):
+        super(CheckPointSprite, self).__init__()
+        self.rect = pygame.Rect(left, top, width, height)
+
+
+
+checkpoints = [CheckPointSprite(100, 100, 100, 100)]
+check_group = pygame.sprite.RenderPlain(*checkpoints)
+
 
 '''class Trophy(pygame.sprite.Sprite):
     def __init__(self, position):
@@ -305,7 +316,8 @@ while 1:
     #USER INPUT
     t1 = time.time()
     dt = t1-t0
-  
+
+
     
 
     deltat = clock.tick(30)
@@ -373,8 +385,11 @@ while 1:
 
     avg_distance = 0
     total_distance = 0
+    pygame.draw.rect(screen, (0, 255, 0), checkpoints[0].rect, width=2)
+    #print(checkpoints[0].rect)
     #print(rect_list)
     for rec in rect_list:
+
         pygame.draw.rect(screen, (0, 255, 0), rec, width=2)
         total_distance += math.sqrt((rec.centerx - car.rect.centerx) ** 2 + (rec.centery - car.rect.centery) ** 2)
     if len(rect_list) > 0:
