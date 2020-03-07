@@ -1,3 +1,5 @@
+import gym
+import numpy as np
 from gym import spaces
 from gym.envs.registration import EnvSpec
 import pygame, math, sys, time
@@ -108,9 +110,9 @@ class PadSprite(pygame.sprite.Sprite):
     normal = None
     #hit = pygame.image.load('collision.png')
     def __init__(self, position, image):
-        self.normal = pygame.image.load(image)
+        self.image = pygame.image.load(image)
         super(PadSprite, self).__init__()
-        self.rect = pygame.Rect(self.normal.get_rect())
+        self.rect = pygame.Rect(self.image.get_rect())
         self.rect.center = position
     def update(self, hit_list):
         if self in hit_list: 
@@ -142,6 +144,11 @@ class MultiCarEnv(gym.Env):
 
     def __init__(self):
         super(MultiCarEnv, self).__init__()
+
+        pygame.init()
+        self.screen = pygame.display.set_mode((1024, 768))
+        self.screen.fill([128, 128, 128])
+        pygame.display.update()
 
         self.pads = [
             PadSprite((50, 50), 'pad_vert.png'),
@@ -378,13 +385,12 @@ class MultiCarEnv(gym.Env):
             current_reward += self.time
 
             if pygame.sprite.spritecollideany(car, self.pad_group, collided = None): 
-                current_reward -= 1000
-                print('here')
+                current_reward -= 10000
             if not pygame.sprite.spritecollideany(car, self.check_group, collided = None):
-                current_reward -= 1000
+                current_reward -= 10000
             for k in range(0, len(self.cars)):
                 if k != j and car.rect.colliderect(self.cars[k].rect):
-                    current_reward -= 1000
+                    current_reward -= 10000
 
             obs_n.append(current_obs)
             reward_n.append(current_reward)
@@ -474,7 +480,9 @@ class MultiCarEnv(gym.Env):
 
     # render environment
     def render(self, mode='human'):
-        screen.fill([128, 128, 128])
+        self.screen.fill([128, 128, 128])
+        self.pad_group.draw(self.screen)
+        self.car_group.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
